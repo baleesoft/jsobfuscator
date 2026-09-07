@@ -24,12 +24,12 @@
 </head>
 <body>
 
-<header class="site-header">
-    <h1>JS Obfuszkátor</h1>
-    <p class="site-header__subtitle">Saját hosztolású JavaScript kód-védelem &mdash; a forráskód sosem hagyja el a böngészőt.</p>
-</header>
+<div class="sticky-bar" id="sticky-bar">
 
-<div class="sticky-bar">
+    <header class="site-header">
+        <h1>JS Obfuszkátor</h1>
+        <p class="site-header__subtitle">Saját hosztolású JavaScript kód-védelem &mdash; a forráskód sosem hagyja el a böngészőt.</p>
+    </header>
 
     <div class="preset-bar" id="preset-bar">
         <button class="preset-btn" data-preset="default">Alapértelmezett</button>

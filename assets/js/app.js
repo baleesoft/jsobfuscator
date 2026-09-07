@@ -20,6 +20,8 @@
     var btnDownload = document.getElementById("btn-download");
     var btnReset = document.getElementById("btn-reset");
 
+    var stickyBar = document.getElementById("sticky-bar");
+
     var presetBar = document.getElementById("preset-bar");
     var presetCustomIndicator = document.getElementById("preset-custom-indicator");
     var savedPresetBar = document.getElementById("saved-preset-bar");
@@ -525,6 +527,34 @@
         });
     }
 
+    // --- Görgetéskor zsugorodó sticky sáv ---
+
+    /**
+     * A sticky-bar "is-scrolled" állapotát kapcsolja az oldal görgetési
+     * pozíciója alapján (a fejléc/preset sorok/be-ki dobozok ekkor
+     * kisebbre zsugorodnak CSS-átmenettel - lásd style.css).
+     */
+    function initStickyShrink() {
+        if (!stickyBar) {
+            return;
+        }
+
+        var SCROLL_THRESHOLD = 40;
+        var ticking = false;
+
+        function updateShrinkState() {
+            stickyBar.classList.toggle("is-scrolled", window.scrollY > SCROLL_THRESHOLD);
+            ticking = false;
+        }
+
+        window.addEventListener("scroll", function () {
+            if (!ticking) {
+                window.requestAnimationFrame(updateShrinkState);
+                ticking = true;
+            }
+        }, { passive: true });
+    }
+
     inputEl.addEventListener("input", updateInputSize);
     btnObfuscate.addEventListener("click", runObfuscation);
     btnCopy.addEventListener("click", copyOutput);
@@ -535,6 +565,7 @@
 
     initPresetBar();
     initRangeDisplays();
+    initStickyShrink();
     updateInputSize();
     updateOutputSize();
     loadSavedPresets();

@@ -22,30 +22,48 @@ body {
     font-family: var(--font-sans);
 }
 
-.site-header {
-    padding: 1.5rem 2rem 1rem;
-    text-align: center;
-}
-
 .sticky-bar {
     position: sticky;
     top: 0;
     z-index: 10;
     background: var(--color-bg);
-    padding-top: 0.5rem;
     padding-bottom: 0.75rem;
     box-shadow: 0 8px 12px -8px rgba(0, 0, 0, 0.4);
+}
+
+.site-header {
+    padding: 1.5rem 2rem 1rem;
+    text-align: center;
+    transition: padding 0.2s ease;
 }
 
 .site-header h1 {
     margin: 0 0 0.25rem;
     font-size: 1.75rem;
+    transition: font-size 0.2s ease;
 }
 
 .site-header__subtitle {
     margin: 0;
     color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: font-size 0.2s ease;
+}
+
+/* Görgetéskor a sticky-bar (fejléc + preset sorok + be/ki dobozok)
+   összességében kisebbre zsugorodik, hogy kevesebb helyet foglaljon
+   a viewportból, de minden rész továbbra is látható marad. A class-t
+   app.js kapcsolja a scroll pozíció alapján. */
+.sticky-bar.is-scrolled .site-header {
+    padding: 0.5rem 2rem 0.35rem;
+}
+
+.sticky-bar.is-scrolled .site-header h1 {
+    font-size: 0.95rem;
+}
+
+.sticky-bar.is-scrolled .site-header__subtitle {
+    font-size: 0.7rem;
 }
 
 .preset-bar {
@@ -129,6 +147,7 @@ body {
     align-items: center;
     gap: 0.5rem;
     margin-top: 0.75rem;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
 }
 
@@ -159,12 +178,23 @@ body {
     align-items: stretch;
     height: 45vh;
     min-height: 280px;
+    transition: height 0.2s ease, min-height 0.2s ease;
+}
+
+.sticky-bar.is-scrolled .layout {
+    height: 22vh;
+    min-height: 160px;
 }
 
 @media (max-width: 900px) {
     .layout {
         grid-template-columns: 1fr;
         height: auto;
+    }
+
+    .sticky-bar.is-scrolled .layout {
+        height: auto;
+        min-height: 0;
     }
 
     .panel--input,
@@ -220,6 +250,11 @@ body {
     font-family: var(--font-mono);
     font-size: 0.85rem;
     line-height: 1.4;
+    transition: min-height 0.2s ease;
+}
+
+.sticky-bar.is-scrolled .code-area {
+    min-height: 90px;
 }
 
 .panel__actions {
