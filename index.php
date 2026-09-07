@@ -59,13 +59,31 @@
                 <input type="file" id="file-upload" accept=".js,.txt" hidden>
             </label>
             <button id="btn-reset" class="button button--secondary">Reset</button>
+            <button id="btn-obfuscate" class="button button--primary">Obfuszkálás</button>
+        </div>
+        <p class="error-message" id="error-message" hidden></p>
+    </section>
+
+    <section class="panel panel--output">
+        <div class="panel__header">
+            <h2>Kimenet</h2>
+            <span class="size-indicator" id="output-size">0 B</span>
+        </div>
+        <textarea id="output-code" class="code-area" readonly spellcheck="false" placeholder="Az obfuszkált kód itt jelenik meg..."></textarea>
+        <div class="panel__actions">
+            <button id="btn-copy" class="button button--secondary" disabled>Másolás</button>
+            <button id="btn-download" class="button button--secondary" disabled>Letöltés</button>
         </div>
     </section>
 
-    <section class="panel panel--options">
-        <div class="panel__header">
-            <h2>Opciók</h2>
-        </div>
+</main>
+
+<section class="options-section">
+    <div class="options-section__header">
+        <h2>Opciók</h2>
+    </div>
+
+    <div class="options-grid">
 
         <details class="option-group" open>
             <summary>Névátalakítás</summary>
@@ -314,23 +332,8 @@
             </div>
         </details>
 
-        <button id="btn-obfuscate" class="button button--primary">Obfuszkálás</button>
-        <p class="error-message" id="error-message" hidden></p>
-    </section>
-
-    <section class="panel panel--output">
-        <div class="panel__header">
-            <h2>Kimenet</h2>
-            <span class="size-indicator" id="output-size">0 B</span>
-        </div>
-        <textarea id="output-code" class="code-area" readonly spellcheck="false" placeholder="Az obfuszkált kód itt jelenik meg..."></textarea>
-        <div class="panel__actions">
-            <button id="btn-copy" class="button button--secondary" disabled>Másolás</button>
-            <button id="btn-download" class="button button--secondary" disabled>Letöltés</button>
-        </div>
-    </section>
-
-</main>
+    </div>
+</section>
 
 <footer class="site-footer">
     <p>Az obfuszkálás nem egyenlő titkosítással &mdash; a cél a visszafejtéshez szükséges munka növelése, nem az áttörhetetlenség.</p>
