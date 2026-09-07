@@ -126,7 +126,7 @@
             </div>
         </details>
 
-        <details class="option-group">
+        <details class="option-group" open>
             <summary>String védelem</summary>
 
             <div class="option option--checkbox">
@@ -195,7 +195,7 @@
             </div>
         </details>
 
-        <details class="option-group">
+        <details class="option-group" open>
             <summary>Kódstruktúra</summary>
 
             <div class="option option--checkbox">
@@ -243,7 +243,7 @@
             </div>
         </details>
 
-        <details class="option-group">
+        <details class="option-group" open>
             <summary>Futásidő-védelem</summary>
 
             <div class="option option--checkbox">
@@ -280,7 +280,7 @@
             </div>
         </details>
 
-        <details class="option-group">
+        <details class="option-group" open>
             <summary>Kimenet / kompatibilitás</summary>
 
             <div class="option option--checkbox">
@@ -316,7 +316,7 @@
             </div>
         </details>
 
-        <details class="option-group">
+        <details class="option-group" open>
             <summary>Kizárási lista</summary>
 
             <div class="option">
