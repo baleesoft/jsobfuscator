@@ -27,6 +27,10 @@
 <header class="site-header">
     <h1>JS Obfuszkátor</h1>
     <p class="site-header__subtitle">Saját hosztolású JavaScript kód-védelem &mdash; a forráskód sosem hagyja el a böngészőt.</p>
+</header>
+
+<div class="sticky-bar">
+
     <div class="preset-bar" id="preset-bar">
         <button class="preset-btn" data-preset="default">Alapértelmezett</button>
         <button class="preset-btn" data-preset="low-obfuscation">Gyors</button>
@@ -43,40 +47,41 @@
         <button id="btn-save-preset" class="button button--secondary">Mentés presetként</button>
         <span class="save-preset-status" id="save-preset-status"></span>
     </div>
-</header>
 
-<main class="layout">
+    <main class="layout">
 
-    <section class="panel panel--input">
-        <div class="panel__header">
-            <h2>Bemenet</h2>
-            <span class="size-indicator" id="input-size">0 B</span>
-        </div>
-        <textarea id="input-code" class="code-area" spellcheck="false" placeholder="Illeszd be ide a JavaScript kódot..."></textarea>
-        <div class="panel__actions">
-            <label class="button button--secondary file-upload-label">
-                Fájl feltöltése
-                <input type="file" id="file-upload" accept=".js,.txt" hidden>
-            </label>
-            <button id="btn-reset" class="button button--secondary">Reset</button>
-            <button id="btn-obfuscate" class="button button--primary">Obfuszkálás</button>
-        </div>
-        <p class="error-message" id="error-message" hidden></p>
-    </section>
+        <section class="panel panel--input">
+            <div class="panel__header">
+                <h2>Bemenet</h2>
+                <span class="size-indicator" id="input-size">0 B</span>
+            </div>
+            <textarea id="input-code" class="code-area" spellcheck="false" placeholder="Illeszd be ide a JavaScript kódot..."></textarea>
+            <div class="panel__actions">
+                <label class="button button--secondary file-upload-label">
+                    Fájl feltöltése
+                    <input type="file" id="file-upload" accept=".js,.txt" hidden>
+                </label>
+                <button id="btn-reset" class="button button--secondary">Reset</button>
+                <button id="btn-obfuscate" class="button button--primary">Obfuszkálás</button>
+            </div>
+            <p class="error-message" id="error-message" hidden></p>
+        </section>
 
-    <section class="panel panel--output">
-        <div class="panel__header">
-            <h2>Kimenet</h2>
-            <span class="size-indicator" id="output-size">0 B</span>
-        </div>
-        <textarea id="output-code" class="code-area" readonly spellcheck="false" placeholder="Az obfuszkált kód itt jelenik meg..."></textarea>
-        <div class="panel__actions">
-            <button id="btn-copy" class="button button--secondary" disabled>Másolás</button>
-            <button id="btn-download" class="button button--secondary" disabled>Letöltés</button>
-        </div>
-    </section>
+        <section class="panel panel--output">
+            <div class="panel__header">
+                <h2>Kimenet</h2>
+                <span class="size-indicator" id="output-size">0 B</span>
+            </div>
+            <textarea id="output-code" class="code-area" readonly spellcheck="false" placeholder="Az obfuszkált kód itt jelenik meg..."></textarea>
+            <div class="panel__actions">
+                <button id="btn-copy" class="button button--secondary" disabled>Másolás</button>
+                <button id="btn-download" class="button button--secondary" disabled>Letöltés</button>
+            </div>
+        </section>
 
-</main>
+    </main>
+
+</div>
 
 <section class="options-section">
     <div class="options-section__header">

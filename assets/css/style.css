@@ -27,6 +27,16 @@ body {
     text-align: center;
 }
 
+.sticky-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--color-bg);
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    box-shadow: 0 8px 12px -8px rgba(0, 0, 0, 0.4);
+}
+
 .site-header h1 {
     margin: 0 0 0.25rem;
     font-size: 1.75rem;
@@ -147,13 +157,24 @@ body {
     gap: 1rem;
     padding: 0 1rem 1.5rem;
     align-items: stretch;
-    height: 60vh;
-    min-height: 320px;
+    height: 45vh;
+    min-height: 280px;
 }
 
 @media (max-width: 900px) {
     .layout {
         grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .panel--input,
+    .panel--output {
+        min-height: 280px;
+    }
+
+    .sticky-bar {
+        position: static;
+        box-shadow: none;
     }
 }
 
