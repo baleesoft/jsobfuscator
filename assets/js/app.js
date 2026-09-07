@@ -1,5 +1,5 @@
 /**
- * JS Obfuszkátor - UI logika (MVP fázis).
+ * JS Obfuszkátor - UI logika.
  *
  * A tényleges obfuszkálás kizárólag a böngészőben, a vendorolt
  * JavaScriptObfuscator motor segítségével történik. Ez a fájl soha
@@ -19,11 +19,29 @@
     var btnCopy = document.getElementById("btn-copy");
     var btnDownload = document.getElementById("btn-download");
 
-    var optIdentifierNamesGenerator = document.getElementById("opt-identifierNamesGenerator");
-    var optStringArray = document.getElementById("opt-stringArray");
-    var optControlFlowFlattening = document.getElementById("opt-controlFlowFlattening");
-    var optSelfDefending = document.getElementById("opt-selfDefending");
-    var optCompact = document.getElementById("opt-compact");
+    var presetBar = document.getElementById("preset-bar");
+    var presetCustomIndicator = document.getElementById("preset-custom-indicator");
+
+    // Minden UI-vezérlő, amelyet egy preset betöltésekor frissítünk, és
+    // amelynek változása "Egyéni" módba lépteti a felületet.
+    var controlIds = [
+        "opt-identifierNamesGenerator", "opt-renameGlobals", "opt-renameProperties",
+        "opt-renamePropertiesMode", "opt-identifiersPrefix",
+        "opt-stringArray", "opt-stringArrayThreshold",
+        "opt-stringArrayEncoding-base64", "opt-stringArrayEncoding-rc4",
+        "opt-stringArrayRotate", "opt-stringArrayShuffle",
+        "opt-stringArrayWrappersCount", "opt-stringArrayWrappersType",
+        "opt-splitStrings", "opt-splitStringsChunkLength", "opt-unicodeEscapeSequence",
+        "opt-controlFlowFlattening", "opt-controlFlowFlatteningThreshold",
+        "opt-deadCodeInjection", "opt-deadCodeInjectionThreshold",
+        "opt-numbersToExpressions", "opt-simplify", "opt-transformObjectKeys",
+        "opt-selfDefending", "opt-debugProtection", "opt-debugProtectionInterval",
+        "opt-disableConsoleOutput", "opt-domainLock", "opt-domainLockRedirectUrl",
+        "opt-compact", "opt-target", "opt-seed", "opt-sourceMap"
+    ];
+
+    var currentPreset = "default";
+    var suppressCustomDetection = false;
 
     /** Emberi olvasásra formázott fájlméret (B/KB/MB). */
     function formatSize(byteLength) {
@@ -55,14 +73,77 @@
         errorEl.hidden = !message;
     }
 
+    /** Soronkénti textarea-tartalmat regex-tömbbé alakít, üres sorokat kihagyva. */
+    function parseRegexLines(text) {
+        return text
+            .split("\n")
+            .map(function (line) { return line.trim(); })
+            .filter(function (line) { return line.length > 0; });
+    }
+
+    /** Soronkénti domain-listát tömbbé alakít, üres sorokat kihagyva. */
+    function parseLines(text) {
+        return text
+            .split("\n")
+            .map(function (line) { return line.trim(); })
+            .filter(function (line) { return line.length > 0; });
+    }
+
     function buildOptions() {
-        return {
-            identifierNamesGenerator: optIdentifierNamesGenerator.value,
-            stringArray: optStringArray.checked,
-            controlFlowFlattening: optControlFlowFlattening.checked,
-            selfDefending: optSelfDefending.checked,
-            compact: optCompact.checked
+        var stringArrayEncoding = [];
+        if (document.getElementById("opt-stringArrayEncoding-base64").checked) {
+            stringArrayEncoding.push("base64");
+        }
+        if (document.getElementById("opt-stringArrayEncoding-rc4").checked) {
+            stringArrayEncoding.push("rc4");
+        }
+
+        var options = {
+            identifierNamesGenerator: document.getElementById("opt-identifierNamesGenerator").value,
+            renameGlobals: document.getElementById("opt-renameGlobals").checked,
+            renameProperties: document.getElementById("opt-renameProperties").checked,
+            renamePropertiesMode: document.getElementById("opt-renamePropertiesMode").value,
+            identifiersPrefix: document.getElementById("opt-identifiersPrefix").value,
+
+            stringArray: document.getElementById("opt-stringArray").checked,
+            stringArrayThreshold: parseFloat(document.getElementById("opt-stringArrayThreshold").value),
+            stringArrayEncoding: stringArrayEncoding,
+            stringArrayRotate: document.getElementById("opt-stringArrayRotate").checked,
+            stringArrayShuffle: document.getElementById("opt-stringArrayShuffle").checked,
+            stringArrayWrappersCount: parseInt(document.getElementById("opt-stringArrayWrappersCount").value, 10) || 0,
+            stringArrayWrappersType: document.getElementById("opt-stringArrayWrappersType").value,
+            splitStrings: document.getElementById("opt-splitStrings").checked,
+            splitStringsChunkLength: parseInt(document.getElementById("opt-splitStringsChunkLength").value, 10) || 10,
+            unicodeEscapeSequence: document.getElementById("opt-unicodeEscapeSequence").checked,
+
+            controlFlowFlattening: document.getElementById("opt-controlFlowFlattening").checked,
+            controlFlowFlatteningThreshold: parseFloat(document.getElementById("opt-controlFlowFlatteningThreshold").value),
+            deadCodeInjection: document.getElementById("opt-deadCodeInjection").checked,
+            deadCodeInjectionThreshold: parseFloat(document.getElementById("opt-deadCodeInjectionThreshold").value),
+            numbersToExpressions: document.getElementById("opt-numbersToExpressions").checked,
+            simplify: document.getElementById("opt-simplify").checked,
+            transformObjectKeys: document.getElementById("opt-transformObjectKeys").checked,
+
+            selfDefending: document.getElementById("opt-selfDefending").checked,
+            debugProtection: document.getElementById("opt-debugProtection").checked,
+            debugProtectionInterval: parseInt(document.getElementById("opt-debugProtectionInterval").value, 10) || 0,
+            disableConsoleOutput: document.getElementById("opt-disableConsoleOutput").checked,
+            domainLock: parseLines(document.getElementById("opt-domainLock").value),
+            domainLockRedirectUrl: document.getElementById("opt-domainLockRedirectUrl").value || "about:blank",
+
+            compact: document.getElementById("opt-compact").checked,
+            target: document.getElementById("opt-target").value,
+            seed: parseInt(document.getElementById("opt-seed").value, 10) || 0,
+            sourceMap: document.getElementById("opt-sourceMap").checked,
+
+            reservedNames: parseRegexLines(document.getElementById("opt-reservedNames").value),
+            reservedStrings: parseRegexLines(document.getElementById("opt-reservedStrings").value)
         };
+
+        // Üres domainLock esetén a motor elvárása szerint ne küldjünk üres tömböt
+        // felesleges domainLockRedirectUrl-lel együtt - de üres tömb önmagában
+        // biztonságos default (nincs zárolás).
+        return options;
     }
 
     function runObfuscation() {
@@ -141,12 +222,135 @@
         reader.readAsText(file);
     }
 
+    // --- Presetek kezelése ---
+
+    function updatePresetButtonsUI() {
+        var buttons = presetBar.querySelectorAll(".preset-btn[data-preset]");
+        buttons.forEach(function (btn) {
+            btn.classList.toggle("preset-btn--active", btn.getAttribute("data-preset") === currentPreset);
+        });
+        presetCustomIndicator.hidden = currentPreset !== window.OBF_CUSTOM_PRESET_KEY;
+    }
+
+    function applyPreset(presetKey) {
+        var preset = window.OBF_PRESETS[presetKey];
+        if (!preset) {
+            return;
+        }
+
+        suppressCustomDetection = true;
+
+        var opts = preset.options;
+
+        setValue("opt-identifierNamesGenerator", opts.identifierNamesGenerator);
+        setChecked("opt-renameGlobals", opts.renameGlobals);
+        setChecked("opt-renameProperties", opts.renameProperties);
+        setValue("opt-renamePropertiesMode", opts.renamePropertiesMode);
+        setValue("opt-identifiersPrefix", opts.identifiersPrefix);
+
+        setChecked("opt-stringArray", opts.stringArray);
+        setValue("opt-stringArrayThreshold", opts.stringArrayThreshold);
+        document.getElementById("stringArrayThreshold-value").textContent = opts.stringArrayThreshold;
+        setChecked("opt-stringArrayEncoding-base64", opts.stringArrayEncoding.indexOf("base64") !== -1);
+        setChecked("opt-stringArrayEncoding-rc4", opts.stringArrayEncoding.indexOf("rc4") !== -1);
+        setChecked("opt-stringArrayRotate", opts.stringArrayRotate);
+        setChecked("opt-stringArrayShuffle", opts.stringArrayShuffle);
+        setValue("opt-stringArrayWrappersCount", opts.stringArrayWrappersCount);
+        setValue("opt-stringArrayWrappersType", opts.stringArrayWrappersType);
+        setChecked("opt-splitStrings", opts.splitStrings);
+        setValue("opt-splitStringsChunkLength", opts.splitStringsChunkLength);
+        setChecked("opt-unicodeEscapeSequence", opts.unicodeEscapeSequence);
+
+        setChecked("opt-controlFlowFlattening", opts.controlFlowFlattening);
+        setValue("opt-controlFlowFlatteningThreshold", opts.controlFlowFlatteningThreshold);
+        document.getElementById("controlFlowFlatteningThreshold-value").textContent = opts.controlFlowFlatteningThreshold;
+        setChecked("opt-deadCodeInjection", opts.deadCodeInjection);
+        setValue("opt-deadCodeInjectionThreshold", opts.deadCodeInjectionThreshold);
+        document.getElementById("deadCodeInjectionThreshold-value").textContent = opts.deadCodeInjectionThreshold;
+        setChecked("opt-numbersToExpressions", opts.numbersToExpressions);
+        setChecked("opt-simplify", opts.simplify);
+        setChecked("opt-transformObjectKeys", opts.transformObjectKeys);
+
+        setChecked("opt-selfDefending", opts.selfDefending);
+        setChecked("opt-debugProtection", opts.debugProtection);
+        setValue("opt-debugProtectionInterval", opts.debugProtectionInterval);
+        setChecked("opt-disableConsoleOutput", opts.disableConsoleOutput);
+        setValue("opt-domainLock", (opts.domainLock || []).join("\n"));
+        setValue("opt-domainLockRedirectUrl", opts.domainLockRedirectUrl || "");
+
+        setChecked("opt-compact", opts.compact);
+        setValue("opt-target", opts.target);
+        setValue("opt-seed", opts.seed);
+        setChecked("opt-sourceMap", opts.sourceMap);
+
+        suppressCustomDetection = false;
+
+        currentPreset = presetKey;
+        updatePresetButtonsUI();
+    }
+
+    function setValue(id, value) {
+        document.getElementById(id).value = value;
+    }
+
+    function setChecked(id, checked) {
+        document.getElementById(id).checked = !!checked;
+    }
+
+    function markCustom() {
+        if (suppressCustomDetection) {
+            return;
+        }
+        if (currentPreset !== window.OBF_CUSTOM_PRESET_KEY) {
+            currentPreset = window.OBF_CUSTOM_PRESET_KEY;
+            updatePresetButtonsUI();
+        }
+    }
+
+    function initPresetBar() {
+        presetBar.addEventListener("click", function (event) {
+            var btn = event.target.closest(".preset-btn[data-preset]");
+            if (btn) {
+                applyPreset(btn.getAttribute("data-preset"));
+            }
+        });
+
+        controlIds.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", markCustom);
+                el.addEventListener("change", markCustom);
+            }
+        });
+
+        applyPreset("default");
+    }
+
+    // --- Csúszka-érték kijelzők ---
+
+    function initRangeDisplays() {
+        var pairs = [
+            ["opt-stringArrayThreshold", "stringArrayThreshold-value"],
+            ["opt-controlFlowFlatteningThreshold", "controlFlowFlatteningThreshold-value"],
+            ["opt-deadCodeInjectionThreshold", "deadCodeInjectionThreshold-value"]
+        ];
+        pairs.forEach(function (pair) {
+            var input = document.getElementById(pair[0]);
+            var display = document.getElementById(pair[1]);
+            input.addEventListener("input", function () {
+                display.textContent = input.value;
+            });
+        });
+    }
+
     inputEl.addEventListener("input", updateInputSize);
     btnObfuscate.addEventListener("click", runObfuscation);
     btnCopy.addEventListener("click", copyOutput);
     btnDownload.addEventListener("click", downloadOutput);
     fileUploadEl.addEventListener("change", handleFileUpload);
 
+    initPresetBar();
+    initRangeDisplays();
     updateInputSize();
     updateOutputSize();
 })();
