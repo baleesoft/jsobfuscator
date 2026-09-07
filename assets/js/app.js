@@ -539,11 +539,23 @@
             return;
         }
 
-        var SCROLL_THRESHOLD = 40;
+        // A zsugorodás maga is megváltoztatja az oldal magasságát (és
+        // ezzel a scroll pozíciót), ezért egyetlen küszöbérték
+        // remegést (oda-vissza kapcsolást) okozna a határon. Két külön
+        // küszöbbel (hiszterézis) ez elkerülhető: csak akkor zsugorít,
+        // ha jóval lejjebb görgetünk, és csak akkor áll vissza, ha
+        // jóval feljebb.
+        var SHRINK_AT = 60;
+        var EXPAND_AT = 15;
         var ticking = false;
 
         function updateShrinkState() {
-            stickyBar.classList.toggle("is-scrolled", window.scrollY > SCROLL_THRESHOLD);
+            var y = window.scrollY;
+            if (!stickyBar.classList.contains("is-scrolled") && y > SHRINK_AT) {
+                stickyBar.classList.add("is-scrolled");
+            } else if (stickyBar.classList.contains("is-scrolled") && y < EXPAND_AT) {
+                stickyBar.classList.remove("is-scrolled");
+            }
             ticking = false;
         }
 
