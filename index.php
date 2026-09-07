@@ -6,7 +6,9 @@
  * Az obfuszkálás teljes egészében a böngészőben, kliensoldali JS-ben
  * fut (assets/js/app.js + assets/js/vendor/javascript-obfuscator-*.browser.js) -
  * a beillesztett forráskód soha nem kerül ehhez a PHP fájlhoz vagy
- * bármilyen szerveroldali végponthoz.
+ * bármilyen szerveroldali végponthoz. Az egyetlen szerveroldali
+ * végpont (api/presets.php) kizárólag a motor opció-beállításait
+ * (JSON) menti/adja vissza presetként - forráskódot soha nem lát.
  *
  * Minden erőforrás-hivatkozás relatív útvonalú, hogy az oldal
  * tetszőleges alkönyvtárba telepítve is működjön.
@@ -31,6 +33,15 @@
         <button class="preset-btn" data-preset="medium-obfuscation">Kiegyensúlyozott</button>
         <button class="preset-btn" data-preset="high-obfuscation">Erős védelem</button>
         <span class="preset-btn preset-btn--custom" id="preset-custom-indicator" hidden>Egyéni</span>
+    </div>
+    <div class="preset-bar preset-bar--saved" id="saved-preset-bar" hidden>
+        <span class="preset-bar__label">Mentett:</span>
+        <span id="saved-preset-list"></span>
+    </div>
+    <div class="save-preset-row">
+        <input type="text" id="save-preset-name" placeholder="Új preset neve" maxlength="100">
+        <button id="btn-save-preset" class="button button--secondary">Mentés presetként</button>
+        <span class="save-preset-status" id="save-preset-status"></span>
     </div>
 </header>
 

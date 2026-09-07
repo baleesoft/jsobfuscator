@@ -1,0 +1,15 @@
+<?php
+/**
+ * Adatbázis-kapcsolat konfigurációs sablonja.
+ *
+ * Másold ezt a fájlt "config.php" néven a projekt gyökerébe, és töltsd
+ * ki a saját tárhelyed MySQL adataival. A "config.php" (a sablon nélkül)
+ * .gitignore-olva van, tehát a valós jelszavad soha nem kerül a
+ * verziókezelőbe.
+ */
+
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'jsobfuscator');
+define('DB_USER', 'db_felhasznalo');
+define('DB_PASS', 'db_jelszo');
+define('DB_CHARSET', 'utf8mb4');
