@@ -230,14 +230,12 @@ body {
     gap: 1rem;
     padding: 0 1rem 1.5rem;
     align-items: stretch;
-    height: 45vh;
-    min-height: 280px;
-    transition: height 0.2s ease, min-height 0.2s ease;
+    height: min(45vh, 420px);
+    transition: height 0.2s ease;
 }
 
 .sticky-bar.is-scrolled .layout {
-    height: 24vh;
-    min-height: 220px;
+    height: 220px;
 }
 
 @media (max-width: 900px) {
@@ -248,7 +246,6 @@ body {
 
     .sticky-bar.is-scrolled .layout {
         height: auto;
-        min-height: 0;
     }
 
     .panel--input,
