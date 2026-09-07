@@ -21,6 +21,7 @@
     var btnReset = document.getElementById("btn-reset");
 
     var stickyBar = document.getElementById("sticky-bar");
+    var btnThemeToggle = document.getElementById("btn-theme-toggle");
 
     var presetBar = document.getElementById("preset-bar");
     var presetCustomIndicator = document.getElementById("preset-custom-indicator");
@@ -583,6 +584,42 @@
         }, { passive: true });
     }
 
+    // --- Világos/sötét téma ---
+
+    var THEME_STORAGE_KEY = "jsobf-theme";
+
+    function applyThemeIcon(theme) {
+        btnThemeToggle.textContent = theme === "light" ? "☀️" : "🌙";
+    }
+
+    function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        applyThemeIcon(theme);
+        try {
+            localStorage.setItem(THEME_STORAGE_KEY, theme);
+        } catch (e) {
+            // localStorage nem elérhető - a választás csak erre az oldalbetöltésre érvényes.
+        }
+    }
+
+    function initThemeToggle() {
+        if (!btnThemeToggle) {
+            return;
+        }
+
+        // A <head>-beli inline script már beállította a data-theme
+        // attribútumot, ha volt mentett preferencia - itt csak az
+        // ikont igazítjuk hozzá, illetve alapértelmezettként "dark"-ot
+        // veszünk, ha még nincs attribútum.
+        var currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+        applyThemeIcon(currentTheme);
+
+        btnThemeToggle.addEventListener("click", function () {
+            var next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+            setTheme(next);
+        });
+    }
+
     inputEl.addEventListener("input", updateInputSize);
     btnObfuscate.addEventListener("click", runObfuscation);
     btnCopy.addEventListener("click", copyOutput);
@@ -594,6 +631,7 @@
     initPresetBar();
     initRangeDisplays();
     initStickyShrink();
+    initThemeToggle();
     updateInputSize();
     updateOutputSize();
     loadSavedPresets();

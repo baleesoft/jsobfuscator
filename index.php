@@ -21,13 +21,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JS Obfuszkátor</title>
 <link rel="stylesheet" href="assets/css/style.css">
+<script>
+    // Minél előbb beállítjuk a mentett témát (localStorage), hogy ne
+    // villanjon fel a sötét alapértelmezés, mielőtt app.js lefutna.
+    (function () {
+        try {
+            var saved = localStorage.getItem("jsobf-theme");
+            if (saved === "light" || saved === "dark") {
+                document.documentElement.setAttribute("data-theme", saved);
+            }
+        } catch (e) {
+            // localStorage nem elérhető (pl. letiltva) - marad az alap sötét téma.
+        }
+    })();
+</script>
 </head>
 <body>
 
 <div class="sticky-bar" id="sticky-bar">
 
     <header class="site-header">
-        <h1>JS Obfuszkátor</h1>
+        <div class="site-header__top">
+            <h1>JS Obfuszkátor</h1>
+            <button id="btn-theme-toggle" class="theme-toggle" type="button" aria-label="Világos/sötét téma váltása" title="Világos/sötét téma váltása">🌙</button>
+        </div>
         <p class="site-header__subtitle">Saját hosztolású JavaScript kód-védelem &mdash; a forráskód sosem hagyja el a böngészőt.</p>
     </header>
 
