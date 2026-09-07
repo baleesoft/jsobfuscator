@@ -47,6 +47,7 @@
                 Fájl feltöltése
                 <input type="file" id="file-upload" accept=".js,.txt" hidden>
             </label>
+            <button id="btn-reset" class="button button--secondary">Reset</button>
         </div>
     </section>
 

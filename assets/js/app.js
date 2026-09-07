@@ -18,6 +18,7 @@
     var btnObfuscate = document.getElementById("btn-obfuscate");
     var btnCopy = document.getElementById("btn-copy");
     var btnDownload = document.getElementById("btn-download");
+    var btnReset = document.getElementById("btn-reset");
 
     var presetBar = document.getElementById("preset-bar");
     var presetCustomIndicator = document.getElementById("preset-custom-indicator");
@@ -222,6 +223,19 @@
         reader.readAsText(file);
     }
 
+    /** Csak a bemeneti és kimeneti dobozok tartalmát törli - az opciókat/presetet nem érinti. */
+    function resetBoxes() {
+        inputEl.value = "";
+        outputEl.value = "";
+        fileUploadEl.value = "";
+        showError("");
+        updateInputSize();
+        updateOutputSize();
+        btnCopy.disabled = true;
+        btnDownload.disabled = true;
+        inputEl.focus();
+    }
+
     // --- Presetek kezelése ---
 
     function updatePresetButtonsUI() {
@@ -348,6 +362,7 @@
     btnCopy.addEventListener("click", copyOutput);
     btnDownload.addEventListener("click", downloadOutput);
     fileUploadEl.addEventListener("change", handleFileUpload);
+    btnReset.addEventListener("click", resetBoxes);
 
     initPresetBar();
     initRangeDisplays();

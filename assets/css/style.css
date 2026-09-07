@@ -15,16 +15,24 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     margin: 0;
     background: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .site-header {
     padding: 1.5rem 2rem 1rem;
     text-align: center;
+    flex: 0 0 auto;
 }
 
 .site-header h1 {
@@ -82,12 +90,24 @@ body {
     grid-template-columns: 1fr 280px 1fr;
     gap: 1rem;
     padding: 0 1rem 1.5rem;
-    align-items: start;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
 @media (max-width: 900px) {
     .layout {
         grid-template-columns: 1fr;
+        overflow-y: auto;
+    }
+
+    .panel--input,
+    .panel--output {
+        min-height: 320px;
+    }
+
+    .panel--options {
+        max-height: none;
     }
 }
 
@@ -99,6 +119,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    min-height: 0;
 }
 
 .panel__header {
@@ -121,7 +142,8 @@ body {
 
 .code-area {
     width: 100%;
-    min-height: 320px;
+    flex: 1 1 auto;
+    min-height: 200px;
     resize: vertical;
     background: #14141f;
     color: var(--color-text);
@@ -181,8 +203,12 @@ body {
 
 .panel--options {
     gap: 0.75rem;
-    max-height: 80vh;
     overflow-y: auto;
+}
+
+.panel--input,
+.panel--output {
+    overflow: hidden;
 }
 
 .option-group {
@@ -294,4 +320,5 @@ body {
     padding: 1rem;
     color: var(--color-text-muted);
     font-size: 0.75rem;
+    flex: 0 0 auto;
 }
