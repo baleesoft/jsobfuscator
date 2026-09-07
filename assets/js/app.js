@@ -539,24 +539,40 @@
             return;
         }
 
-        // A zsugorodás maga is megváltoztatja az oldal magasságát (és
-        // ezzel a scroll pozíciót), ezért egyetlen küszöbérték
-        // remegést (oda-vissza kapcsolást) okozna a határon. Két külön
-        // küszöbbel (hiszterézis) ez elkerülhető: csak akkor zsugorít,
-        // ha jóval lejjebb görgetünk, és csak akkor áll vissza, ha
-        // jóval feljebb.
-        var SHRINK_AT = 60;
-        var EXPAND_AT = 15;
+        // A zsugorodás/visszanyúlás maga is megváltoztatja az oldal
+        // magasságát, ami az állapotváltás pillanatában megugratja a
+        // scrollY-t - ez egyetlen küszöbnél, sőt hiszterézissel is
+        // remegést okozhat a határon. Ezért két külön küszöb (hiszterézis)
+        // MELLÉ egy rövid "hűtési" időt is teszünk: egy váltás után a CSS
+        // átmenet (0.2s) idejére nem engedünk újabb váltást, hogy a
+        // méretváltozás okozta scroll-ugrás ne tudjon azonnal visszaváltani.
+        var SHRINK_AT = 120;
+        var EXPAND_AT = 20;
+        var TRANSITION_COOLDOWN_MS = 250;
         var ticking = false;
+        var coolingDown = false;
 
         function updateShrinkState() {
-            var y = window.scrollY;
-            if (!stickyBar.classList.contains("is-scrolled") && y > SHRINK_AT) {
-                stickyBar.classList.add("is-scrolled");
-            } else if (stickyBar.classList.contains("is-scrolled") && y < EXPAND_AT) {
-                stickyBar.classList.remove("is-scrolled");
-            }
             ticking = false;
+            if (coolingDown) {
+                return;
+            }
+
+            var y = window.scrollY;
+            var isScrolled = stickyBar.classList.contains("is-scrolled");
+
+            if (!isScrolled && y > SHRINK_AT) {
+                stickyBar.classList.add("is-scrolled");
+            } else if (isScrolled && y < EXPAND_AT) {
+                stickyBar.classList.remove("is-scrolled");
+            } else {
+                return;
+            }
+
+            coolingDown = true;
+            setTimeout(function () {
+                coolingDown = false;
+            }, TRANSITION_COOLDOWN_MS);
         }
 
         window.addEventListener("scroll", function () {
