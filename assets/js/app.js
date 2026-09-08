@@ -25,18 +25,6 @@
 
     var presetBar = document.getElementById("preset-bar");
     var presetCustomIndicator = document.getElementById("preset-custom-indicator");
-    var savedPresetBar = document.getElementById("saved-preset-bar");
-    var savedPresetList = document.getElementById("saved-preset-list");
-    var savePresetNameEl = document.getElementById("save-preset-name");
-    var btnSavePreset = document.getElementById("btn-save-preset");
-    var savePresetStatusEl = document.getElementById("save-preset-status");
-
-    // Az API végpont relatív útvonala - alkönyvtárba telepítve is működik,
-    // mert az aktuális oldalhoz (index.php) képest relatív.
-    var PRESETS_API_URL = "api/presets.php";
-
-    // Szerverről betöltött, felhasználó által mentett presetek (id -> {nev, opciok}).
-    var savedPresets = {};
 
     // Minden UI-vezérlő, amelyet egy preset betöltésekor frissítünk, és
     // amelynek változása "Egyéni" módba lépteti a felületet.
@@ -167,12 +155,12 @@
         var code = inputEl.value;
 
         if (!code.trim()) {
-            showError("Nincs bemeneti kód.");
+            showError(translate("msg.noInput"));
             return;
         }
 
         if (typeof JavaScriptObfuscator === "undefined") {
-            showError("Az obfuszkáló motor nem töltődött be.");
+            showError(translate("msg.engineNotLoaded"));
             return;
         }
 
@@ -184,7 +172,7 @@
             btnCopy.disabled = false;
             btnDownload.disabled = false;
         } catch (err) {
-            showError("Hiba az obfuszkálás közben: " + err.message);
+            showError(translate("msg.obfuscateError") + err.message);
             outputEl.value = "";
             updateOutputSize();
             btnCopy.disabled = true;
@@ -198,12 +186,12 @@
         }
         navigator.clipboard.writeText(outputEl.value).then(function () {
             var original = btnCopy.textContent;
-            btnCopy.textContent = "Másolva!";
+            btnCopy.textContent = translate("btn.copy.done");
             setTimeout(function () {
                 btnCopy.textContent = original;
             }, 1500);
         }).catch(function () {
-            showError("A vágólapra másolás nem sikerült.");
+            showError(translate("msg.copyFailed"));
         });
     }
 
@@ -233,7 +221,7 @@
             updateInputSize();
         };
         reader.onerror = function () {
-            showError("A fájl beolvasása nem sikerült.");
+            showError(translate("msg.fileReadFailed"));
         };
         reader.readAsText(file);
     }
@@ -259,12 +247,6 @@
             btn.classList.toggle("preset-btn--active", btn.getAttribute("data-preset") === currentPreset);
         });
         presetCustomIndicator.hidden = currentPreset !== window.OBF_CUSTOM_PRESET_KEY;
-
-        if (savedPresetList) {
-            savedPresetList.querySelectorAll(".preset-btn[data-saved-id]").forEach(function (btn) {
-                btn.classList.toggle("preset-btn--active", currentPreset === "saved:" + btn.getAttribute("data-saved-id"));
-            });
-        }
     }
 
     function applyPreset(presetKey) {
@@ -274,21 +256,6 @@
         }
         applyOptions(preset.options);
         currentPreset = presetKey;
-        updatePresetButtonsUI();
-    }
-
-    /** Egy mentett preset (szerverről jött, hiányos mezőkkel is lehet) betöltése. */
-    function applySavedPreset(presetId) {
-        var preset = savedPresets[presetId];
-        if (!preset) {
-            return;
-        }
-        // A mentett opciókat a "default" preset tetejére fektetjük, hogy
-        // ha a szerveren régebbi, hiányos opció-JSON lenne, a hiányzó
-        // mezők biztonságos alapértéket kapjanak.
-        var merged = Object.assign({}, window.OBF_PRESETS["default"].options, preset.opciok);
-        applyOptions(merged);
-        currentPreset = "saved:" + presetId;
         updatePresetButtonsUI();
     }
 
@@ -375,140 +342,6 @@
         });
 
         applyPreset("default");
-    }
-
-    // --- Mentett presetek (PHP/MySQL AJAX, csak opció-JSON) ---
-
-    /** A mentett presetek gombsorát rerendereli a savedPresets alapján. */
-    function renderSavedPresets() {
-        var ids = Object.keys(savedPresets);
-        savedPresetBar.hidden = ids.length === 0;
-        savedPresetList.innerHTML = "";
-
-        ids.forEach(function (id) {
-            var preset = savedPresets[id];
-
-            var wrapper = document.createElement("span");
-            wrapper.className = "saved-preset-item";
-
-            var btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "preset-btn";
-            btn.setAttribute("data-saved-id", id);
-            btn.textContent = preset.nev;
-            btn.addEventListener("click", function () {
-                applySavedPreset(id);
-            });
-
-            var del = document.createElement("button");
-            del.type = "button";
-            del.className = "saved-preset-delete";
-            del.setAttribute("aria-label", "Preset törlése: " + preset.nev);
-            del.textContent = "×";
-            del.addEventListener("click", function (event) {
-                event.stopPropagation();
-                deleteSavedPreset(id, preset.nev);
-            });
-
-            wrapper.appendChild(btn);
-            wrapper.appendChild(del);
-            savedPresetList.appendChild(wrapper);
-        });
-
-        updatePresetButtonsUI();
-    }
-
-    /** Mentett presetek betöltése a szerverről (csak opció-JSON, nem forráskód). */
-    function loadSavedPresets() {
-        fetch(PRESETS_API_URL + "?action=list")
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                if (!data.ok) {
-                    return;
-                }
-                savedPresets = {};
-                data.presets.forEach(function (preset) {
-                    savedPresets[preset.id] = preset;
-                });
-                renderSavedPresets();
-            })
-            .catch(function () {
-                // A mentett presetek nélkül is teljes értékű az eszköz
-                // (pl. ha még nincs beállítva az adatbázis) - csendben
-                // elnyeljük, nem zavarjuk az obfuszkálási funkciót.
-            });
-    }
-
-    function showSaveStatus(message, isError) {
-        savePresetStatusEl.textContent = message;
-        savePresetStatusEl.classList.toggle("save-preset-status--error", !!isError);
-        if (message) {
-            setTimeout(function () {
-                savePresetStatusEl.textContent = "";
-            }, 3000);
-        }
-    }
-
-    function saveCurrentAsPreset() {
-        var nev = savePresetNameEl.value.trim();
-        if (!nev) {
-            showSaveStatus("Adj nevet a presetnek.", true);
-            savePresetNameEl.focus();
-            return;
-        }
-
-        var body = new URLSearchParams();
-        body.set("action", "save");
-        body.set("nev", nev);
-        body.set("opciok_json", JSON.stringify(buildOptions()));
-
-        btnSavePreset.disabled = true;
-        fetch(PRESETS_API_URL, { method: "POST", body: body })
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                if (!data.ok) {
-                    showSaveStatus(data.error || "A mentés nem sikerült.", true);
-                    return;
-                }
-                savedPresets[data.preset.id] = data.preset;
-                renderSavedPresets();
-                savePresetNameEl.value = "";
-                showSaveStatus("Preset elmentve.", false);
-            })
-            .catch(function () {
-                showSaveStatus("A mentés nem sikerült (hálózati hiba).", true);
-            })
-            .finally(function () {
-                btnSavePreset.disabled = false;
-            });
-    }
-
-    function deleteSavedPreset(id, nev) {
-        if (!window.confirm('Törlöd a(z) "' + nev + '" presetet?')) {
-            return;
-        }
-
-        var body = new URLSearchParams();
-        body.set("action", "delete");
-        body.set("id", id);
-
-        fetch(PRESETS_API_URL, { method: "POST", body: body })
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                if (!data.ok) {
-                    showSaveStatus(data.error || "A törlés nem sikerült.", true);
-                    return;
-                }
-                delete savedPresets[id];
-                if (currentPreset === "saved:" + id) {
-                    applyPreset("default");
-                } else {
-                    renderSavedPresets();
-                }
-            })
-            .catch(function () {
-                showSaveStatus("A törlés nem sikerült (hálózati hiba).", true);
-            });
     }
 
     // --- Csúszka-érték kijelzők ---
@@ -620,19 +453,117 @@
         });
     }
 
+    // --- Nyelvválasztás (hu/en/de) ---
+
+    var LANG_STORAGE_KEY = "jsobf-lang";
+    var LANG_COOKIE_KEY = "jsobf_lang";
+    var LANG_FLAGS = { hu: "🇭🇺", en: "🇬🇧", de: "🇩🇪" };
+
+    var langSwitcherEl = document.getElementById("lang-switcher");
+    var btnLangToggle = document.getElementById("btn-lang-toggle");
+    var langMenuEl = document.getElementById("lang-menu");
+    var langFlagEl = document.getElementById("lang-flag");
+    var langCodeEl = document.getElementById("lang-code");
+
+    /** Fordítás lekérése az aktuális i18n szótárból (window.OBF_I18N). */
+    function translate(key) {
+        if (!window.OBF_I18N) {
+            return "";
+        }
+        var current = document.documentElement.getAttribute("lang") || window.OBF_I18N.DEFAULT_LANG;
+        return window.OBF_I18N.t(current, key);
+    }
+
+    function updateLangButton(lang) {
+        if (langFlagEl) {
+            langFlagEl.textContent = LANG_FLAGS[lang] || LANG_FLAGS[window.OBF_I18N.DEFAULT_LANG];
+        }
+        if (langCodeEl) {
+            langCodeEl.textContent = lang.toUpperCase();
+        }
+    }
+
+    function setLanguage(lang) {
+        if (!window.OBF_I18N || !window.OBF_I18N.isSupported(lang)) {
+            lang = window.OBF_I18N ? window.OBF_I18N.DEFAULT_LANG : "hu";
+        }
+        document.documentElement.setAttribute("lang", lang);
+        window.OBF_I18N.apply(lang);
+        updateLangButton(lang);
+
+        try {
+            localStorage.setItem(LANG_STORAGE_KEY, lang);
+        } catch (e) {
+            // localStorage nem elérhető - a választás csak erre az oldalbetöltésre érvényes.
+        }
+        // Hosszú lejáratú cookie, hogy a PHP-oldali render (title/meta/lang)
+        // is a legutóbb választott nyelvet lássa a következő betöltéskor.
+        document.cookie = LANG_COOKIE_KEY + "=" + lang + ";path=/;max-age=31536000;SameSite=Lax";
+    }
+
+    function closeLangMenu() {
+        langMenuEl.hidden = true;
+        btnLangToggle.setAttribute("aria-expanded", "false");
+    }
+
+    function openLangMenu() {
+        langMenuEl.hidden = false;
+        btnLangToggle.setAttribute("aria-expanded", "true");
+    }
+
+    function initLanguageSelector() {
+        if (!btnLangToggle || !langMenuEl) {
+            return;
+        }
+
+        // A <head>-beli inline script / PHP már beállította a lang
+        // attribútumot - itt csak a gombot és a szövegeket igazítjuk hozzá.
+        var currentLang = document.documentElement.getAttribute("lang") || window.OBF_I18N.DEFAULT_LANG;
+        updateLangButton(currentLang);
+        window.OBF_I18N.apply(currentLang);
+
+        btnLangToggle.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (langMenuEl.hidden) {
+                openLangMenu();
+            } else {
+                closeLangMenu();
+            }
+        });
+
+        langMenuEl.querySelectorAll("li[data-lang] button").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var lang = btn.closest("li").getAttribute("data-lang");
+                setLanguage(lang);
+                closeLangMenu();
+            });
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!langSwitcherEl.contains(event.target)) {
+                closeLangMenu();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closeLangMenu();
+            }
+        });
+    }
+
     inputEl.addEventListener("input", updateInputSize);
     btnObfuscate.addEventListener("click", runObfuscation);
     btnCopy.addEventListener("click", copyOutput);
     btnDownload.addEventListener("click", downloadOutput);
     fileUploadEl.addEventListener("change", handleFileUpload);
     btnReset.addEventListener("click", resetBoxes);
-    btnSavePreset.addEventListener("click", saveCurrentAsPreset);
 
     initPresetBar();
     initRangeDisplays();
     initStickyShrink();
     initThemeToggle();
+    initLanguageSelector();
     updateInputSize();
     updateOutputSize();
-    loadSavedPresets();
 })();
