@@ -144,6 +144,12 @@
             "desc.reservedStrings": "Az ide illeszkedő string-literálok nem kerülnek a string-tömbbe / nem lesznek kódolva.",
 
             "footer.disclaimer": "Az obfuszkálás nem egyenlő titkosítással — a cél a visszafejtéshez szükséges munka növelése, nem az áttörhetetlenség.",
+            "footer.privacyLink": "Adatvédelmi tájékoztató",
+
+            "consent.text": "Az oldal Google Analytics segítségével névtelen látogatottsági statisztikát gyűjt. A beillesztett forráskódod soha nem kerül elküldésre. Bővebben:",
+            "consent.privacyLink": "Adatvédelmi tájékoztató",
+            "consent.accept": "Elfogadom",
+            "consent.reject": "Elutasítom",
 
             "msg.noInput": "Nincs bemeneti kód.",
             "msg.engineNotLoaded": "Az obfuszkáló motor nem töltődött be.",
@@ -286,6 +292,12 @@
             "desc.reservedStrings": "String literals matching these patterns won't be placed in the string array / won't be encoded.",
 
             "footer.disclaimer": "Obfuscation is not the same as encryption — the goal is to increase the effort needed to reverse it, not to make it unbreakable.",
+            "footer.privacyLink": "Privacy policy",
+
+            "consent.text": "This site uses Google Analytics to collect anonymous visitor statistics. The source code you paste in is never sent anywhere. Learn more:",
+            "consent.privacyLink": "Privacy policy",
+            "consent.accept": "Accept",
+            "consent.reject": "Reject",
 
             "msg.noInput": "No input code.",
             "msg.engineNotLoaded": "The obfuscation engine failed to load.",
@@ -428,6 +440,12 @@
             "desc.reservedStrings": "String-Literale, die diesem Muster entsprechen, werden nicht ins String-Array aufgenommen bzw. nicht kodiert.",
 
             "footer.disclaimer": "Obfuskierung ist nicht dasselbe wie Verschlüsselung — das Ziel ist, den für die Rückentwicklung nötigen Aufwand zu erhöhen, nicht Unknackbarkeit.",
+            "footer.privacyLink": "Datenschutzerklärung",
+
+            "consent.text": "Diese Seite verwendet Google Analytics, um anonyme Besucherstatistiken zu erfassen. Dein eingefügter Quellcode wird niemals gesendet. Mehr erfahren:",
+            "consent.privacyLink": "Datenschutzerklärung",
+            "consent.accept": "Akzeptieren",
+            "consent.reject": "Ablehnen",
 
             "msg.noInput": "Kein Eingabecode vorhanden.",
             "msg.engineNotLoaded": "Die Obfuskierungs-Engine konnte nicht geladen werden.",

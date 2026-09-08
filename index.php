@@ -64,7 +64,24 @@ $obf_text = $OBF_PHP_I18N[$obf_lang];
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="<?php echo htmlspecialchars($obf_text["description"]); ?>">
 <title><?php echo htmlspecialchars($obf_text["title"]); ?></title>
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="stylesheet" href="assets/css/style.css">
+<!-- Google Consent Mode v2 - alapértelmezetten "denied", amíg a látogató
+     el nem fogadja a cookie-consent bannert (assets/js/consent.js). -->
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied'
+    });
+    gtag('js', new Date());
+    gtag('config', 'G-83X8TCC7KW');
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-83X8TCC7KW"></script>
 <script>
     // Minél előbb beállítjuk a mentett témát és nyelvet (localStorage),
     // hogy ne villanjon fel az alapértelmezés, mielőtt app.js lefutna.
@@ -418,11 +435,13 @@ $obf_text = $OBF_PHP_I18N[$obf_lang];
 
 <footer class="site-footer">
     <p data-i18n="footer.disclaimer">Az obfuszkálás nem egyenlő titkosítással &mdash; a cél a visszafejtéshez szükséges munka növelése, nem az áttörhetetlenség.</p>
+    <p class="site-footer__links"><a href="privacy.php" data-i18n="footer.privacyLink">Adatvédelmi tájékoztató</a></p>
 </footer>
 
 <script src="assets/js/vendor/javascript-obfuscator-5.6.0.browser.js"></script>
 <script src="assets/js/presets.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/app.js"></script>
+<script src="assets/js/consent.js"></script>
 </body>
 </html>
